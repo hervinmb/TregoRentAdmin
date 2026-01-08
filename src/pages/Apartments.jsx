@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { Plus, Search, Filter, Edit, Trash2 } from 'lucide-react';
 import ApartmentForm from '../components/ApartmentForm';
-import { getApartments } from '../services/dataService';
-import { Plus } from 'lucide-react';
+import { getApartments, deleteApartment } from '../services/dataService';
 
 const Apartments = () => {
   const [showForm, setShowForm] = useState(false);
   const [apartments, setApartments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingApartment, setEditingApartment] = useState(null);
+
+  useEffect(() => {
+    fetchApartments();
+  }, []);
 
   const fetchApartments = async () => {
-    setLoading(true);
     try {
       const data = await getApartments();
       setApartments(data);
@@ -20,63 +24,130 @@ const Apartments = () => {
     }
   };
 
-  useEffect(() => {
+  const handleFormSuccess = () => {
+    setShowForm(false);
+    setEditingApartment(null);
     fetchApartments();
-  }, []);
+  };
+
+  const handleEdit = (apartment) => {
+    setEditingApartment(apartment);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this apartment?")) {
+      try {
+        await deleteApartment(id);
+        fetchApartments();
+      } catch (error) {
+        console.error("Failed to delete apartment:", error);
+        alert("Failed to delete apartment.");
+      }
+    }
+  };
+
+  const handleAddNew = () => {
+    setEditingApartment(null);
+    setShowForm(true);
+  };
 
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1>Apartments Management</h1>
-        <button 
-          className="btn-primary" 
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? 'Cancel' : <><Plus size={18} /> Add Apartment</>}
+        <div>
+          <h1>Apartments</h1>
+          <p>Manage your property listings</p>
+        </div>
+        <button className="btn-primary" onClick={handleAddNew}>
+          <Plus size={20} />
+          <span>Add New Apartment</span>
         </button>
       </div>
 
       {showForm && (
-        <div className="form-container">
-          <h2>Add New Apartment</h2>
-          <ApartmentForm onSuccess={() => {
-            setShowForm(false);
-            fetchApartments();
-          }} />
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>{editingApartment ? 'Edit Apartment' : 'Add New Apartment'}</h2>
+              <button 
+                className="close-btn" 
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingApartment(null);
+                }}
+              >
+                &times;
+              </button>
+            </div>
+            <ApartmentForm onSuccess={handleFormSuccess} initialData={editingApartment} />
+          </div>
         </div>
       )}
 
-      <div className="content-area">
-        {loading ? (
-          <p>Loading apartments...</p>
-        ) : apartments.length === 0 ? (
-          <p className="empty-state">No apartments added yet.</p>
-        ) : (
-          <div className="items-grid">
-            {apartments.map((apt) => (
-              <div key={apt.id} className="item-card">
-                <div className="card-image">
-                  {apt.images && apt.images.length > 0 ? (
-                    <img src={apt.images[0]} alt={apt.name} />
-                  ) : (
-                    <div className="placeholder-image">No Image</div>
-                  )}
+      {/* Search and Filter Section - Placeholder for now */}
+      <div className="filters-section">
+        <div className="search-bar">
+          <Search size={20} />
+          <input type="text" placeholder="Search apartments..." />
+        </div>
+        <button className="btn-secondary">
+          <Filter size={20} />
+          <span>Filters</span>
+        </button>
+      </div>
+
+      {/* Apartments Grid */}
+      {loading ? (
+        <div className="loading-state">Loading apartments...</div>
+      ) : (
+        <div className="admin-items-grid">
+          {apartments.map((apt) => (
+            <div key={apt.id} className="admin-item-card">
+              <div className="admin-card-image">
+                {apt.images && apt.images.length > 0 ? (
+                  <img src={apt.images[0]} alt={apt.name} />
+                ) : (
+                  <div className="admin-placeholder-image">No Image</div>
+                )}
+              </div>
+              <div className="admin-card-details">
+                <h3>{apt.name}</h3>
+                <p className="admin-card-price">{Number(apt.price).toLocaleString()} GNF</p>
+                <div className="admin-card-specs">
+                  <span>{apt.bedrooms} Bed</span>
+                  <span>•</span>
+                  <span>{apt.bathrooms} Bath</span>
                 </div>
-                <div className="card-details">
-                  <h3>{apt.name}</h3>
-                  <p className="price">{Number(apt.price).toLocaleString()} GNF</p>
-                  <div className="specs">
-                    <span>{apt.bedrooms} Bed</span>
-                    <span>•</span>
-                    <span>{apt.bathrooms} Bath</span>
-                  </div>
-                  <p className="description">{apt.description.substring(0, 80)}...</p>
+                <p className="admin-card-description">{apt.description.substring(0, 80)}...</p>
+                
+                <div className="admin-card-actions">
+                  <button 
+                    className="admin-btn-icon admin-btn-edit" 
+                    onClick={() => handleEdit(apt)}
+                    title="Edit"
+                  >
+                    <Edit size={18} />
+                  </button>
+                  <button 
+                    className="admin-btn-icon admin-btn-delete" 
+                    onClick={() => handleDelete(apt.id)}
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </div>
+          ))}
+          
+          {apartments.length === 0 && (
+            <div className="admin-empty-state">
+              <p>No apartments found. Add your first listing!</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

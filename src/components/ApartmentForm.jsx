@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { addApartment } from '../services/dataService';
+import React, { useState, useEffect } from 'react';
+import { addApartment, updateApartment } from '../services/dataService';
 import { Image, Upload, X } from 'lucide-react';
 
-const ApartmentForm = ({ onSuccess }) => {
+const ApartmentForm = ({ onSuccess, initialData = null }) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
@@ -11,7 +11,21 @@ const ApartmentForm = ({ onSuccess }) => {
     description: '',
     bedrooms: '',
     bathrooms: '',
+    images: []
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name || '',
+        price: initialData.price || '',
+        description: initialData.description || '',
+        bedrooms: initialData.bedrooms || '',
+        bathrooms: initialData.bathrooms || '',
+        images: initialData.images || []
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,36 +35,51 @@ const ApartmentForm = ({ onSuccess }) => {
   const handleImageChange = (e) => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files);
-      if (images.length + newImages.length > 4) {
-        alert("You can only upload a maximum of 4 images.");
+      const currentImageCount = (formData.images ? formData.images.length : 0) + images.length;
+      if (currentImageCount + newImages.length > 4) {
+        alert("You can only have a maximum of 4 images.");
         return;
       }
       setImages(prev => [...prev, ...newImages]);
     }
   };
 
-  const removeImage = (index) => {
+  const removeNewImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await addApartment(formData, images);
+      if (initialData) {
+        await updateApartment(initialData.id, formData, images);
+        alert('Apartment updated successfully!');
+      } else {
+        await addApartment(formData, images);
+        alert('Apartment added successfully!');
+      }
+      
       setFormData({
         name: '',
         price: '',
         description: '',
         bedrooms: '',
         bathrooms: '',
+        images: []
       });
       setImages([]);
       if (onSuccess) onSuccess();
-      alert('Apartment added successfully!');
     } catch (error) {
       console.error(error);
-      alert('Failed to add apartment.');
+      alert(initialData ? 'Failed to update apartment.' : 'Failed to add apartment.');
     } finally {
       setLoading(false);
     }
@@ -123,7 +152,7 @@ const ApartmentForm = ({ onSuccess }) => {
         <div className="image-upload-container">
           <label className="upload-btn">
             <Upload size={20} />
-            <span>Upload Images</span>
+            <span>{initialData ? 'Add More Images' : 'Upload Images'}</span>
             <input
               type="file"
               multiple
@@ -133,10 +162,20 @@ const ApartmentForm = ({ onSuccess }) => {
             />
           </label>
           <div className="image-previews">
+            {/* Existing Images */}
+            {formData.images && formData.images.map((url, index) => (
+              <div key={`existing-${index}`} className="image-preview">
+                <img src={url} alt={`Existing ${index + 1}`} />
+                <button type="button" onClick={() => removeExistingImage(index)} className="remove-img-btn">
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+            {/* New Images */}
             {images.map((file, index) => (
-              <div key={index} className="image-preview">
+              <div key={`new-${index}`} className="image-preview">
                 <img src={URL.createObjectURL(file)} alt={`preview ${index}`} />
-                <button type="button" onClick={() => removeImage(index)} className="remove-img-btn">
+                <button type="button" onClick={() => removeNewImage(index)} className="remove-img-btn">
                   <X size={14} />
                 </button>
               </div>
@@ -146,7 +185,7 @@ const ApartmentForm = ({ onSuccess }) => {
       </div>
 
       <button type="submit" className="btn-submit" disabled={loading}>
-        {loading ? 'Adding...' : 'Add Apartment'}
+        {loading ? (initialData ? 'Updating...' : 'Adding...') : (initialData ? 'Update Apartment' : 'Add Apartment')}
       </button>
     </form>
   );

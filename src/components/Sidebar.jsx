@@ -1,9 +1,12 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Car, Building, LogOut } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Home, Car, Building, LogOut, Calendar } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
 
   const isActive = (path) => {
     return location.pathname === path ? 'active' : '';
@@ -12,6 +15,15 @@ const Sidebar = ({ isOpen, onClose }) => {
   const handleNavClick = () => {
     if (window.innerWidth <= 768 && onClose) {
       onClose();
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/signin');
+    } catch (error) {
+      console.error('Failed to log out', error);
     }
   };
 
@@ -33,9 +45,13 @@ const Sidebar = ({ isOpen, onClose }) => {
           <Car size={20} />
           <span>Cars</span>
         </Link>
+        <Link to="/reservations" className={`nav-item ${isActive('/reservations')}`} onClick={handleNavClick}>
+          <Calendar size={20} />
+          <span>Reservations</span>
+        </Link>
       </nav>
       <div className="sidebar-footer">
-        <button className="nav-item logout-btn">
+        <button className="nav-item logout-btn" onClick={handleLogout}>
           <LogOut size={20} />
           <span>Logout</span>
         </button>

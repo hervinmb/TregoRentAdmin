@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { addCar } from '../services/dataService';
+import React, { useState, useEffect } from 'react';
+import { addCar, updateCar } from '../services/dataService';
 import { Upload, X } from 'lucide-react';
 
-const CarForm = ({ onSuccess }) => {
+const CarForm = ({ onSuccess, initialData = null }) => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
@@ -12,7 +12,22 @@ const CarForm = ({ onSuccess }) => {
     transmission: 'Automatic',
     airConditioning: 'Yes',
     description: '',
+    images: []
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name || '',
+        price: initialData.price || '',
+        model: initialData.model || '',
+        transmission: initialData.transmission || 'Automatic',
+        airConditioning: initialData.airConditioning || 'Yes',
+        description: initialData.description || '',
+        images: initialData.images || []
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,23 +37,38 @@ const CarForm = ({ onSuccess }) => {
   const handleImageChange = (e) => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files);
-      if (images.length + newImages.length > 4) {
-        alert("You can only upload a maximum of 4 images.");
+      const currentImageCount = (formData.images ? formData.images.length : 0) + images.length;
+      if (currentImageCount + newImages.length > 4) {
+        alert("You can only have a maximum of 4 images.");
         return;
       }
       setImages(prev => [...prev, ...newImages]);
     }
   };
 
-  const removeImage = (index) => {
+  const removeNewImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await addCar(formData, images);
+      if (initialData) {
+        await updateCar(initialData.id, formData, images);
+        alert('Car updated successfully!');
+      } else {
+        await addCar(formData, images);
+        alert('Car added successfully!');
+      }
+
       setFormData({
         name: '',
         price: '',
@@ -46,13 +76,13 @@ const CarForm = ({ onSuccess }) => {
         transmission: 'Automatic',
         airConditioning: 'Yes',
         description: '',
+        images: []
       });
       setImages([]);
       if (onSuccess) onSuccess();
-      alert('Car added successfully!');
     } catch (error) {
       console.error(error);
-      alert('Failed to add car.');
+      alert(initialData ? 'Failed to update car.' : 'Failed to add car.');
     } finally {
       setLoading(false);
     }
@@ -131,7 +161,7 @@ const CarForm = ({ onSuccess }) => {
         <div className="image-upload-container">
           <label className="upload-btn">
             <Upload size={20} />
-            <span>Upload Images</span>
+            <span>{initialData ? 'Add More Images' : 'Upload Images'}</span>
             <input
               type="file"
               multiple
@@ -141,10 +171,25 @@ const CarForm = ({ onSuccess }) => {
             />
           </label>
           <div className="image-previews">
+            {/* Existing Images */}
+            {formData.images && formData.images.map((url, index) => (
+              <div key={`existing-${index}`} className="image-preview">
+                <img src={url} alt={`Existing ${index + 1}`} />
+                <button
+                  type="button"
+                  className="remove-img-btn"
+                  onClick={() => removeExistingImage(index)}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+
+            {/* New Images */}
             {images.map((file, index) => (
-              <div key={index} className="image-preview">
-                <img src={URL.createObjectURL(file)} alt={`preview ${index}`} />
-                <button type="button" onClick={() => removeImage(index)} className="remove-img-btn">
+              <div key={`new-${index}`} className="image-preview">
+                <img src={URL.createObjectURL(file)} alt={`new ${index}`} />
+                <button type="button" onClick={() => removeNewImage(index)} className="remove-img-btn">
                   <X size={14} />
                 </button>
               </div>
@@ -154,7 +199,7 @@ const CarForm = ({ onSuccess }) => {
       </div>
 
       <button type="submit" className="btn-submit" disabled={loading}>
-        {loading ? 'Adding...' : 'Add Car'}
+        {loading ? (initialData ? 'Updating...' : 'Adding...') : (initialData ? 'Update Car' : 'Add Car')}
       </button>
     </form>
   );
