@@ -8,12 +8,14 @@ const Layout = () => {
 
   return (
     <div className="admin-layout">
-      <button 
-        className="mobile-menu-btn"
-        onClick={() => setIsSidebarOpen(true)}
-      >
-        <Menu size={24} />
-      </button>
+      {!isSidebarOpen && (
+        <button 
+          className="mobile-menu-btn"
+          onClick={() => setIsSidebarOpen(true)}
+        >
+          <Menu size={24} />
+        </button>
+      )}
       
       {/* Overlay */}
       <div 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { addCar, updateCar } from '../services/dataService';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Loader2 } from 'lucide-react';
 
 const CarForm = ({ onSuccess, initialData = null }) => {
   const [loading, setLoading] = useState(false);
@@ -199,7 +199,14 @@ const CarForm = ({ onSuccess, initialData = null }) => {
       </div>
 
       <button type="submit" className="btn-submit" disabled={loading}>
-        {loading ? (initialData ? 'Updating...' : 'Adding...') : (initialData ? 'Update Car' : 'Add Car')}
+        {loading ? (
+          <>
+            <Loader2 className="spinner" size={20} />
+            {initialData ? ' Updating...' : ' Adding...'}
+          </>
+        ) : (
+          initialData ? 'Update Car' : 'Add Car'
+        )}
       </button>
     </form>
   );

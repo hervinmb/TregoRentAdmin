@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, Loader2 } from 'lucide-react';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -28,16 +28,16 @@ const SignIn = () => {
   };
 
   return (
-    <div className="signin-container">
-      <div className="signin-card">
-        <div className="signin-header">
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
           <h2>Admin Sign In</h2>
           <p>Welcome back! Please enter your details.</p>
         </div>
         
         {error && <div className="error-message">{error}</div>}
         
-        <form onSubmit={handleSubmit} className="signin-form">
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <div className="input-icon-wrapper">
@@ -69,7 +69,13 @@ const SignIn = () => {
           </div>
 
           <button type="submit" className="btn-submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (
+              <>
+                <Loader2 className="spinner" size={20} /> Signing in...
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
       </div>

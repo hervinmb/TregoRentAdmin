@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { addApartment, updateApartment } from '../services/dataService';
-import { Image, Upload, X } from 'lucide-react';
+import { Image, Upload, X, Loader2 } from 'lucide-react';
 
 const ApartmentForm = ({ onSuccess, initialData = null }) => {
   const [loading, setLoading] = useState(false);
@@ -185,7 +185,14 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
       </div>
 
       <button type="submit" className="btn-submit" disabled={loading}>
-        {loading ? (initialData ? 'Updating...' : 'Adding...') : (initialData ? 'Update Apartment' : 'Add Apartment')}
+        {loading ? (
+          <>
+            <Loader2 className="spinner" size={20} />
+            {initialData ? ' Updating...' : ' Adding...'}
+          </>
+        ) : (
+          initialData ? 'Update Apartment' : 'Add Apartment'
+        )}
       </button>
     </form>
   );

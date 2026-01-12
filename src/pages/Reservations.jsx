@@ -106,32 +106,32 @@ const Reservations = () => {
                         {res.status === 'pending' && (
                           <>
                             <button 
-                              className="btn-accept btn-sm" 
+                              className="btn-accept btn-with-text" 
                               onClick={() => handleStatusUpdate(res.id, 'accepted')}
                               disabled={processingId === res.id}
                               title="Accept"
                             >
-                              <FaCheck />
+                              <FaCheck /> Accept
                             </button>
                             <button 
-                              className="btn-reject btn-sm" 
+                              className="btn-reject btn-with-text" 
                               onClick={() => handleStatusUpdate(res.id, 'rejected')}
                               disabled={processingId === res.id}
                               title="Reject"
                             >
-                              <FaTimes />
+                              <FaTimes /> Reject
                             </button>
                           </>
                         )}
                         {res.status === 'accepted' && (
                           <button 
-                            className="btn-cancel btn-sm" 
+                            className="btn-cancel btn-with-text" 
                             onClick={() => handleStatusUpdate(res.id, 'rejected')}
                             disabled={processingId === res.id}
                             title="Cancel Reservation"
                             style={{backgroundColor: '#ef4444'}}
                           >
-                            <FaTimes />
+                            <FaTimes /> Cancel
                           </button>
                         )}
                       </div>
