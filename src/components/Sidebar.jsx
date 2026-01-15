@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Car, Building, LogOut, Calendar, BarChart3 } from 'lucide-react';
+import { Home, Building, LogOut, Calendar, BarChart3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -40,10 +40,6 @@ const Sidebar = ({ isOpen, onClose }) => {
         <Link to="/apartments" className={`nav-item ${isActive('/apartments')}`} onClick={handleNavClick}>
           <Building size={20} />
           <span>Apartments</span>
-        </Link>
-        <Link to="/cars" className={`nav-item ${isActive('/cars')}`} onClick={handleNavClick}>
-          <Car size={20} />
-          <span>Cars</span>
         </Link>
         <Link to="/reservations" className={`nav-item ${isActive('/reservations')}`} onClick={handleNavClick}>
           <Calendar size={20} />
