@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { addApartment, updateApartment } from '../services/dataService';
+import { addApartment, updateApartment, getApartments } from '../services/dataService';
 import { Image, Upload, X, Loader2 } from 'lucide-react';
 
 const ApartmentForm = ({ onSuccess, initialData = null }) => {
@@ -11,10 +11,12 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
     description: '',
     bedrooms: '',
     bathrooms: '',
+    place: '',
     category: '',
     contactLink: '',
     images: []
   });
+  const [availablePlaces, setAvailablePlaces] = useState([]);
 
   useEffect(() => {
     if (initialData) {
@@ -24,12 +26,33 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
         description: initialData.description || '',
         bedrooms: initialData.bedrooms || '',
         bathrooms: initialData.bathrooms || '',
+        place: initialData.place || '',
         category: initialData.category || '',
         contactLink: initialData.contactLink || '',
         images: initialData.images || []
       });
     }
   }, [initialData]);
+
+  useEffect(() => {
+    const loadPlaces = async () => {
+      try {
+        const apartments = await getApartments();
+        const uniquePlaces = Array.from(
+          new Set(
+            apartments
+              .map(apartment => apartment.place)
+              .filter(Boolean)
+          )
+        );
+        setAvailablePlaces(uniquePlaces);
+      } catch (error) {
+        console.error('Failed to load places for suggestions:', error);
+      }
+    };
+
+    loadPlaces();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,6 +100,9 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
         description: '',
         bedrooms: '',
         bathrooms: '',
+        place: '',
+        category: '',
+        contactLink: '',
         images: []
       });
       setImages([]);
@@ -140,6 +166,22 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
       </div>
 
       <div className="form-row">
+        <div className="form-group">
+          <label>Place</label>
+          <input
+            type="text"
+            name="place"
+            list="place-options"
+            value={formData.place}
+            onChange={handleChange}
+            placeholder="e.g. Conakry, Miami, Paris"
+          />
+          <datalist id="place-options">
+            {availablePlaces.map((place) => (
+              <option key={place} value={place} />
+            ))}
+          </datalist>
+        </div>
         <div className="form-group">
           <label>Category</label>
           <select
