@@ -11,6 +11,8 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
     description: '',
     bedrooms: '',
     bathrooms: '',
+    category: '',
+    contactLink: '',
     images: []
   });
 
@@ -22,6 +24,8 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
         description: initialData.description || '',
         bedrooms: initialData.bedrooms || '',
         bathrooms: initialData.bathrooms || '',
+        category: initialData.category || '',
+        contactLink: initialData.contactLink || '',
         images: initialData.images || []
       });
     }
@@ -131,6 +135,36 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
             onChange={handleChange}
             required
             placeholder="e.g. 1"
+          />
+        </div>
+      </div>
+
+      <div className="form-row">
+        <div className="form-group">
+          <label>Category</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select category</option>
+            <option value="entire house">entire house</option>
+            <option value="guest room">guest room</option>
+            <option value="apartment">apartment</option>
+            <option value="hotel">hotel</option>
+            <option value="room in a lodge">room in a lodge</option>
+            <option value="apartment in a lodge">apartment in a lodge</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Contact link (optional)</label>
+          <input
+            type="url"
+            name="contactLink"
+            value={formData.contactLink}
+            onChange={handleChange}
+            placeholder="https://example.com/booking"
           />
         </div>
       </div>

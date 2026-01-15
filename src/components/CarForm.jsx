@@ -12,6 +12,7 @@ const CarForm = ({ onSuccess, initialData = null }) => {
     transmission: 'Automatic',
     airConditioning: 'Yes',
     description: '',
+    contactLink: '',
     images: []
   });
 
@@ -24,6 +25,7 @@ const CarForm = ({ onSuccess, initialData = null }) => {
         transmission: initialData.transmission || 'Automatic',
         airConditioning: initialData.airConditioning || 'Yes',
         description: initialData.description || '',
+        contactLink: initialData.contactLink || '',
         images: initialData.images || []
       });
     }
@@ -154,6 +156,17 @@ const CarForm = ({ onSuccess, initialData = null }) => {
           rows="4"
           placeholder="Describe the car..."
         ></textarea>
+      </div>
+
+      <div className="form-group">
+        <label>Contact link (optional)</label>
+        <input
+          type="url"
+          name="contactLink"
+          value={formData.contactLink}
+          onChange={handleChange}
+          placeholder="https://example.com/booking"
+        />
       </div>
 
       <div className="form-group">

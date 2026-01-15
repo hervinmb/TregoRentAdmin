@@ -119,6 +119,11 @@ const Apartments = () => {
                   <span>•</span>
                   <span>{apt.bathrooms} Bath</span>
                 </div>
+                {apt.category && (
+                  <div className="admin-card-specs">
+                    <span>{apt.category}</span>
+                  </div>
+                )}
                 <p className="admin-card-description">{apt.description.substring(0, 80)}...</p>
                 
                 <div className="admin-card-actions">

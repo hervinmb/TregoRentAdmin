@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Apartments from './pages/Apartments';
 import Cars from './pages/Cars';
 import Reservations from './pages/Reservations';
+import Analytics from './pages/Analytics';
 import SignIn from './pages/SignIn';
 import './App.css';
 
@@ -22,6 +23,7 @@ function App() {
               <Route path="apartments" element={<Apartments />} />
               <Route path="cars" element={<Cars />} />
               <Route path="reservations" element={<Reservations />} />
+              <Route path="analytics" element={<Analytics />} />
             </Route>
           </Route>
           
