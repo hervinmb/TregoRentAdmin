@@ -191,12 +191,12 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
             required
           >
             <option value="">Select category</option>
-            <option value="entire house">entire house</option>
-            <option value="guest room">guest room</option>
-            <option value="apartment">apartment</option>
-            <option value="hotel">hotel</option>
-            <option value="room in a lodge">room in a lodge</option>
-            <option value="apartment in a lodge">apartment in a lodge</option>
+            <option value="entire house">Entire house</option>
+            <option value="guest room">Guest room</option>
+            <option value="apartment">Apartment</option>
+            <option value="hotel">Hotel</option>
+            <option value="room in a lodge">Room in a lodge</option>
+            <option value="apartment in a lodge">Apartment in a lodge</option>
           </select>
         </div>
         <div className="form-group">
