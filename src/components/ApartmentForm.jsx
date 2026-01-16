@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { addApartment, updateApartment, getApartments } from '../services/dataService';
-import { Image, Upload, X, Loader2 } from 'lucide-react';
+import { Upload, X, Loader2, Check } from 'lucide-react';
 
 const ApartmentForm = ({ onSuccess, initialData = null }) => {
   const [loading, setLoading] = useState(false);
@@ -9,13 +9,13 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
     name: '',
     price: '',
     description: '',
-    bedrooms: '',
-    bathrooms: '',
+    amenities: [],
     place: '',
     category: '',
     contactLink: '',
     images: []
   });
+  const [newAmenity, setNewAmenity] = useState('');
   const [availablePlaces, setAvailablePlaces] = useState([]);
 
   useEffect(() => {
@@ -24,8 +24,7 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
         name: initialData.name || '',
         price: initialData.price || '',
         description: initialData.description || '',
-        bedrooms: initialData.bedrooms || '',
-        bathrooms: initialData.bathrooms || '',
+        amenities: initialData.amenities || [],
         place: initialData.place || '',
         category: initialData.category || '',
         contactLink: initialData.contactLink || '',
@@ -82,6 +81,16 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
     }));
   };
 
+  const handleAddAmenity = () => {
+    const value = newAmenity.trim();
+    if (!value) return;
+    setFormData(prev => ({
+      ...prev,
+      amenities: [...(prev.amenities || []), value]
+    }));
+    setNewAmenity('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -98,13 +107,13 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
         name: '',
         price: '',
         description: '',
-        bedrooms: '',
-        bathrooms: '',
+        amenities: [],
         place: '',
         category: '',
         contactLink: '',
         images: []
       });
+      setNewAmenity('');
       setImages([]);
       if (onSuccess) onSuccess();
     } catch (error) {
@@ -142,26 +151,33 @@ const ApartmentForm = ({ onSuccess, initialData = null }) => {
           />
         </div>
         <div className="form-group">
-          <label>Bedrooms</label>
-          <input
-            type="number"
-            name="bedrooms"
-            value={formData.bedrooms}
-            onChange={handleChange}
-            required
-            placeholder="e.g. 2"
-          />
-        </div>
-        <div className="form-group">
-          <label>Bathrooms</label>
-          <input
-            type="number"
-            name="bathrooms"
-            value={formData.bathrooms}
-            onChange={handleChange}
-            required
-            placeholder="e.g. 1"
-          />
+          <label>Amenities</label>
+          <div className="amenities-input-row">
+            <input
+              type="text"
+              name="amenity"
+              value={newAmenity}
+              onChange={(e) => setNewAmenity(e.target.value)}
+              placeholder="e.g. 2 beds, 1 bath"
+            />
+            <button
+              type="button"
+              className="btn-amenity-add"
+              onClick={handleAddAmenity}
+            >
+              Add
+            </button>
+          </div>
+          {formData.amenities && formData.amenities.length > 0 && (
+            <div className="amenities-list">
+              {formData.amenities.map((item, index) => (
+                <div key={index} className="amenity-pill">
+                  <Check size={14} />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

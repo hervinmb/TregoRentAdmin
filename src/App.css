@@ -719,6 +719,46 @@ body {
   background: white;
 }
 
+.amenities-input-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn-amenity-add {
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--primary-color);
+  background: white;
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-amenity-add:hover {
+  background: #eff6ff;
+}
+
+.amenities-list {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.amenity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 9999px;
+  background: #ecfdf5;
+  color: #166534;
+  font-size: 0.75rem;
+}
+
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {

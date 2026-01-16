@@ -114,12 +114,14 @@ const Apartments = () => {
               <div className="admin-card-details">
                 <h3>{apt.name}</h3>
                 <p className="admin-card-price">{Number(apt.price).toLocaleString()} GNF</p>
-                <div className="admin-card-specs">
-                  <span>{apt.bedrooms} Bed</span>
-                  <span>•</span>
-                  <span>{apt.bathrooms} Bath</span>
-                </div>
-                {apt.category && (
+                {apt.amenities && apt.amenities.length > 0 && (
+                  <div className="admin-card-specs">
+                    {apt.amenities.map((item, index) => (
+                      <span key={index}>{item}</span>
+                    ))}
+                  </div>
+                )}
+                {apt.category && !apt.amenities && (
                   <div className="admin-card-specs">
                     <span>{apt.category}</span>
                   </div>
